@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Othello_Controll : MonoBehaviour
 {
@@ -12,25 +13,34 @@ public class Othello_Controll : MonoBehaviour
     private Vector3 inipos = new Vector3(5.25f, 0f, 5.25f);
     private const float unit = -1.5f;
 
-    enum ecolor {
+    public enum ecolor
+    {
         black = 0,
         white = 1,
         none = 2,
     }
 
-    private int[,] in_board_disk_state = new int[8, 8];
+    public int[,] in_board_disk_state = new int[8, 8];
     private GameObject[,] in_board_disk = new GameObject[8, 8];
     private List<GameObject> validlist = new List<GameObject>();
+    public int[,] Get_Board_Disk_State() { return in_board_disk_state; }
+
+    [SerializeField]
+    private CPUController cpu;
 
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
+        //cpu = new CPUController();
         InitBoard();
-        ViewValid();
     }
 
-    void InitBoard() {
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
+    void InitBoard()
+    {
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
                 in_board_disk_state[y, x] = (int)ecolor.none;
             }
         }
@@ -38,9 +48,32 @@ public class Othello_Controll : MonoBehaviour
         CreateDisk(3, 4, (int)ecolor.black);
         CreateDisk(4, 3, (int)ecolor.black);
         CreateDisk(4, 4, (int)ecolor.white);
+        ViewValid();
     }
 
-    public void ClickValid(int x, int y) {
+    public void ViewValid()
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                if (in_board_disk_state[y, x] != (int)ecolor.none) continue;
+                int reverse_amount = 0;
+                for (int yline = -1; yline < 2; yline++)
+                {
+                    for (int xline = -1; xline < 2; xline++)
+                    {
+                        if (xline == 0) if (yline == 0) continue;
+                        reverse_amount += CheckLine(x, y, xline, yline, (int)ecolor.black);
+                    }
+                }
+                if (reverse_amount > 0) CreateValid(x, y);
+            }
+        }
+    }
+
+    public void ClickValid(int x, int y)
+    {
         for (int i = 0; i < validlist.Count; i++) Destroy(validlist[i].gameObject);
         validlist.Clear();
         CreateDisk(x, y, (int)ecolor.black);
@@ -52,24 +85,11 @@ public class Othello_Controll : MonoBehaviour
                 ReverseLine(x, y, xline, yline, (int)ecolor.black);
             }
         }
+        cpu.StartOthelloAI();
     }
 
-    void ViewValid() {
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                int reverse_amount = 0;
-                for (int yline = -1; yline < 2; yline++) {
-                    for (int xline = -1; xline < 2; xline++) {
-                        if (xline == 0) if(yline == 0) continue;
-                        reverse_amount += CheckLine(x, y, xline, yline, (int)ecolor.black);
-                    }
-                }
-                if (reverse_amount > 0) CreateValid(x, y);
-            }
-        }
-    }
-
-    void CreateValid(int x, int y) {
+    void CreateValid(int x, int y)
+    {
         Vector3 objpos = inipos + new Vector3(unit * y, 0f, unit * x);
         GameObject createobj;
         createobj = Instantiate(valid_prefab, objpos, Quaternion.identity);
@@ -78,7 +98,8 @@ public class Othello_Controll : MonoBehaviour
         validlist.Add(createobj);
     }
 
-    void CreateDisk(int x, int y, int color) {
+    public void CreateDisk(int x, int y, int color)
+    {
         Vector3 objpos = new Vector3(inipos.x + (unit * y), 0f, inipos.z + (unit * x));
         GameObject createobj;
         createobj = Instantiate(disk_prefab, objpos, Quaternion.identity);
@@ -87,15 +108,18 @@ public class Othello_Controll : MonoBehaviour
         in_board_disk_state[y, x] = color;
     }
 
-    int CheckLine(int x, int y, int xline, int yline, int diskstate) {
+    public int CheckLine(int x, int y, int xline, int yline, int diskstate)
+    {
         int reverseamount = 0;
         int amount = 0;
         int i = 1;
-        while (true) {
+        while (true)
+        {
             if (y + yline * i < 0 || x + xline * i < 0 || y + yline * i > 7 || x + xline * i > 7) break;
             if (i == 1 && in_board_disk_state[y + yline * i, x + xline * i] == diskstate) break;
             if (in_board_disk_state[y + yline * i, x + xline * i] == (int)ecolor.none) break;
-            if (in_board_disk_state[y + yline * i, x + xline * i] == diskstate) {
+            if (in_board_disk_state[y + yline * i, x + xline * i] == diskstate)
+            {
                 reverseamount = amount;
                 break;
             }
@@ -105,24 +129,29 @@ public class Othello_Controll : MonoBehaviour
         return reverseamount;
     }
 
-    void ReverseLine(int x, int y, int xline, int yline, int diskstate) {
+    public void ReverseLine(int x, int y, int xline, int yline, int diskstate)
+    {
         List<Vector2> reverselist = new List<Vector2>();
         int i = 1;
         while (true)
         {
-            if (y + yline * i < 0 || x + xline * i < 0 || y + yline * i > 7 || x + xline * i > 7) {
+            if (y + yline * i < 0 || x + xline * i < 0 || y + yline * i > 7 || x + xline * i > 7)
+            {
                 reverselist.Clear();
                 break;
             }
-            if (i == 1 && in_board_disk_state[y + yline * i, x + xline * i] == diskstate) {
+            if (i == 1 && in_board_disk_state[y + yline * i, x + xline * i] == diskstate)
+            {
                 reverselist.Clear();
                 break;
             }
-            if (in_board_disk_state[y + yline * i, x + xline * i] == (int)ecolor.none) {
+            if (in_board_disk_state[y + yline * i, x + xline * i] == (int)ecolor.none)
+            {
                 reverselist.Clear();
                 break;
             }
-            if (in_board_disk_state[y + yline * i, x + xline * i] == diskstate) {
+            if (in_board_disk_state[y + yline * i, x + xline * i] == diskstate)
+            {
                 break;
             }
             reverselist.Add(new Vector2(x + xline * i, y + yline * i));
@@ -141,7 +170,8 @@ public class Othello_Controll : MonoBehaviour
                 diskanim.PlayAnim1();
                 in_board_disk_state[(int)reverselist[j].y, (int)reverselist[j].x] = 0;
             }
-            else {
+            else
+            {
                 in_board_disk[(int)reverselist[j].y, (int)reverselist[j].x].transform.position += new Vector3(0f, 0.625f, 0f);
                 diskanim.PlayAnim2();
                 in_board_disk_state[(int)reverselist[j].y, (int)reverselist[j].x] = 1;
