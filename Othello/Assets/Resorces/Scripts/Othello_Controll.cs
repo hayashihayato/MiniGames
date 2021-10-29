@@ -20,7 +20,11 @@ public class Othello_Controll : MonoBehaviour
         none = 2,
     }
 
-    public int[,] in_board_disk_state = new int[8, 8];
+    private int[] diskcount;
+    public int[] Getdiskcount() { return diskcount; }
+    public void PlusBlackCount() { diskcount[(int)ecolor.black]++; diskcount[(int)ecolor.white]--; }
+    public void PlusWhiteCount() { diskcount[(int)ecolor.white]++; diskcount[(int)ecolor.black]--; }
+    private int[,] in_board_disk_state = new int[8, 8];
     private GameObject[,] in_board_disk = new GameObject[8, 8];
     private List<GameObject> validlist = new List<GameObject>();
     public int[,] Get_Board_Disk_State() { return in_board_disk_state; }
@@ -31,8 +35,16 @@ public class Othello_Controll : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //cpu = new CPUController();
         InitBoard();
+    }
+
+    private void WaitSeconds(float t)
+    {
+        float time = 0;
+        while (time < t)
+        {
+            Debug.Log("");
+        }
     }
 
     void InitBoard()
@@ -48,6 +60,7 @@ public class Othello_Controll : MonoBehaviour
         CreateDisk(3, 4, (int)ecolor.black);
         CreateDisk(4, 3, (int)ecolor.black);
         CreateDisk(4, 4, (int)ecolor.white);
+        diskcount = new int[2] { 2, 2 };
         ViewValid();
     }
 
@@ -77,6 +90,7 @@ public class Othello_Controll : MonoBehaviour
         for (int i = 0; i < validlist.Count; i++) Destroy(validlist[i].gameObject);
         validlist.Clear();
         CreateDisk(x, y, (int)ecolor.black);
+        diskcount[(int)ecolor.black]++;
         for (int yline = -1; yline < 2; yline++)
         {
             for (int xline = -1; xline < 2; xline++)
@@ -169,12 +183,14 @@ public class Othello_Controll : MonoBehaviour
                 in_board_disk[(int)reverselist[j].y, (int)reverselist[j].x].transform.position += new Vector3(0f, 0.625f, 0f);
                 diskanim.PlayAnim1();
                 in_board_disk_state[(int)reverselist[j].y, (int)reverselist[j].x] = 0;
+                PlusBlackCount();
             }
             else
             {
                 in_board_disk[(int)reverselist[j].y, (int)reverselist[j].x].transform.position += new Vector3(0f, 0.625f, 0f);
                 diskanim.PlayAnim2();
                 in_board_disk_state[(int)reverselist[j].y, (int)reverselist[j].x] = 1;
+                PlusWhiteCount();
             }
         }
     }

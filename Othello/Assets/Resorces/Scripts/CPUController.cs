@@ -70,6 +70,7 @@ public class CPUController : MonoBehaviour
         if (mx != -1 && my != -1)
         {
             oc.CreateDisk(mx, my, (int)ecolor.white);
+            oc.Getdiskcount()[1]++;
             for (int yline = -1; yline < 2; yline++)
             {
                 for (int xline = -1; xline < 2; xline++)
