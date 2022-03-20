@@ -20,7 +20,7 @@ public class TitleScreen : MonoBehaviour
         startButton.onClick.AddListener(() =>
         {
             Debug.Log("Picross読み込み中");
-            picrossGameManager.DestroyAllScreen();
+            picrossGameManager.LoadPicross(0);
         });
     }
 }

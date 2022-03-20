@@ -99,7 +99,8 @@ public class Othello_Controll : MonoBehaviour
                 ReverseLine(x, y, xline, yline, (int)ecolor.black);
             }
         }
-        cpu.StartOthelloAI();
+        if (CheckEnd()) GetComponent<UIManager>().CreateGameEndUI();
+        else cpu.StartOthelloAI();
     }
 
     void CreateValid(int x, int y)
@@ -193,5 +194,20 @@ public class Othello_Controll : MonoBehaviour
                 PlusWhiteCount();
             }
         }
+    }
+
+    public bool CheckEnd()
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                if (in_board_disk_state[y, x] == (int)ecolor.none)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

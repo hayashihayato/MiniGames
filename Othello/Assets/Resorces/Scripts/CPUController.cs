@@ -80,6 +80,7 @@ public class CPUController : MonoBehaviour
                 }
             }
         }
-        oc.ViewValid();
+        if (oc.CheckEnd()) oc.GetComponent<UIManager>().CreateGameEndUI();
+        else oc.ViewValid();
     }
 }

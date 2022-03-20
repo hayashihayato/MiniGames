@@ -13,4 +13,7 @@ MonoBehaviour:
   m_Name: PicrossDataBase
   m_EditorClassIdentifier: 
   Picroses:
-  - {fileID: 11400000, guid: dec9785dd35f3d44fadefb9cab08001d, type: 2}
+  - name: one
+    p: {fileID: 11400000, guid: dec9785dd35f3d44fadefb9cab08001d, type: 2}
+  - name: one
+    p: {fileID: 11400000, guid: dec9785dd35f3d44fadefb9cab08001d, type: 2}

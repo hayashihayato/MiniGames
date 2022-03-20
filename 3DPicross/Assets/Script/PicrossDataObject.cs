@@ -5,5 +5,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PicrossDataBase", menuName = "CreatePicrossDataBase")]
 public class PicrossDataObject : ScriptableObject
 {
-    public List<Picross> Picroses = new List<Picross>();
+    public List<Data> Picroses = new List<Data>();
+}
+
+[System.Serializable]
+public class Data
+{
+    public string name;
+    public Picross p;
 }
